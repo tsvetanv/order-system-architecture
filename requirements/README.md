@@ -1,23 +1,32 @@
-# Architecture Requirements
+# Architecture Requirements – Order Processing System
 
-This folder contains the **architectural requirements** for the Order Processing System.
+This folder contains the **architectural input artifacts** for the Order Processing System.
 
-At this stage, requirements are intentionally kept **high-level and consolidated**
-to allow evolution of the architecture without premature structure decisions.
+These documents capture the foundational information required to design, evolve, and validate the system architecture before introducing diagrams, infrastructure, or implementation details.
 
-## Scope
+The goal is to:
+- establish a shared domain language
+- define clear system boundaries
+- record initial stakeholder expectations
+- enable traceability and automation (Architecture as Code)
 
-The requirements will cover:
-- Business drivers and goals
-- Functional capabilities at system level
-- Non-functional and quality attributes (scalability, reliability, security, etc.)
+## Structure
 
-## Evolution Plan
+- **domain.md**  
+  Defines the domain language: actors, core concepts, and relationships used consistently across architecture, code, and documentation.
 
-As the architecture evolves, this folder may be extended with:
-- business.md
-- functional.md
-- non-functional.md
+- **scope.md**  
+  Defines what the Order Processing System is responsible for and what is explicitly out of scope.
+
+- **requirements-raw.md**  
+  Captures the raw, uncategorized output of initial stakeholder interviews.
+
+## Notes
+
+- These artifacts represent **Iteration 1 – Architectural Inputs**
+- Requirements are intentionally not yet categorized or prioritized
+- All future architecture models (C4, ADRs, validation rules, IaC) must trace back to these inputs
+
 
 ## Related Repositories
 
