@@ -1,0 +1,74 @@
+############################################
+# Order Processing System - Architecture
+# Git Ignore File
+############################################
+
+### Structurizr Lite #################################
+
+# Structurizr Lite local data & temp files
+.structurizr/
+_structurizr/
+structurizr/
+workspace.json
+*.diagram.png
+*.diagram.svg
+
+# Exported diagrams (optional - keep if you generate diagrams in Git)
+diagrams/*.png
+diagrams/*.svg
+
+
+### VS Code ###########################################
+
+.vscode/
+.history/
+*.code-workspace
+
+
+### OS & Editor Files #################################
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Linux
+*~
+*.swp
+*.swo
+
+
+### Logs & Temp #######################################
+
+*.log
+*.tmp
+*.temp
+
+
+### Python (in case of helper scripts later) ###########
+
+__pycache__/
+*.py[cod]
+
+
+### Shell scripts artifacts ############################
+
+*.sh~
+*.bak
+
+
+### JetBrains (optional) ###############################
+
+.idea/
+*.iml
+out/
+
+
+############################################
+# END OF FILE
+############################################
