@@ -4,11 +4,15 @@ This folder contains the **architectural input artifacts** for the Order Process
 
 These documents capture the foundational information required to design, evolve, and validate the system architecture before introducing diagrams, infrastructure, or implementation details.
 
-The goal is to:
-- establish a shared domain language
-- define clear system boundaries
-- record initial stakeholder expectations
-- enable traceability and automation (Architecture as Code)
+## Purpose
+
+The goal of this folder is to:
+
+- establish a shared domain and vocabulary
+- define clear system responsibilities and boundaries
+- capture stakeholder expectations without committing to solutions prematurely
+- enable **traceability** between requirements ↔ ADRs ↔ C4 models ↔ implementation
+- support iterative evolution (Architecture as Code)
 
 ## Structure
 
@@ -21,16 +25,37 @@ The goal is to:
 - **requirements-raw.md**  
   Captures the raw, uncategorized output of initial stakeholder interviews.
 
-## Notes
+- **requirements-refined.md** 
+  Defines categorized & prioritized FR/NFRs + architectural drivers.  
 
-- These artifacts represent **Iteration 1 – Architectural Inputs**
-- Requirements are intentionally not yet categorized or prioritized
-- All future architecture models (C4, ADRs, validation rules, IaC) must trace back to these inputs
+## Lifecycle Stage
 
+This folder represents:
 
-## Related Repositories
+> **Iteration 1 — Architectural Inputs (Baseline)**
+
+These inputs inform:
+
+- C4 models (System Context & Container Views)
+- ADR-001 (Architecture Style)
+- ADR-002 (Integration Model)
+
+Later iterations may refine or update this folder as new requirements emerge.
+
+## Traceability Links
 
 - Architecture models:  
   https://github.com/tsvetanv/order-system-architecture
 - Documentation site:  
   https://github.com/tsvetanv/order-system-docs
+
+All changes to architecture **must reference the originating requirement** and be reflected in at least one of:
+- ADRs
+- C4 model update
+- validation rules
+
+## Status
+
+- Requirements are **now categorized**
+- Top 3 NFRs have been selected as architectural drivers
+- Scalability & High Availability acknowledged as **future** NFRs
