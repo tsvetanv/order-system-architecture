@@ -2,7 +2,14 @@
 
 **Status:** Accepted  
 **Date:** 2025-12-28  
-**Related:** ADR-001 — Adopt a Modular Monolith with 4 Containers
+**Decision Type:**  Architectural Baseline (Integration & Communication Strategy)   
+
+## Related
+- ADR-001 — Modular Monolith Architecture
+- ADR-003 — Deferred Microservices & Distribution Strategy
+- `requirements-refined.md` (Primary NFR drivers)
+## Changelog
+- **2025-12-29** — Terminology refined; aligned with ADR-003; decision unchanged  
 
 ## Context
 
@@ -14,15 +21,19 @@ The Order Processing System (OPS) interacts with multiple external systems:
 
 The architecture must define **how OPS communicates** with those external systems and how internal modules collaborate.
 
-Key drivers:
-- Architecture-as-Code as a guiding methodology
-- Primary NFRs (from `requirements-refined.md`): 
-  - Maintainability
-  - Time-to-Market
-  - Reliability
+Key drivers (the primary NFRs from `requirements-refined.md`):
+
+- **Maintainability**
+- **Time-to-Market**
+- **Reliability**
+
+Supporting constraints:
+
+- Architecture-as-Code (AaC) as a guiding methodology
 - Low-latency operations
 - Fast feature delivery for the demo
-- Single developer context (initially)
+- Single developer context (initial scope)
+- No scale pressure or team distribution (see ADR-003)
 
 ## Decision
 
@@ -44,7 +55,10 @@ The **Integration Service** acts as the **single outbound gateway** to all exter
 - retry behavior  
 - basic observability hooks
 
-This model defines a clear responsibility separation and aligns with the Modular Monolith chosen in ADR-001.
+In this way the **Integration Service** prevents domain services from depending directly on external systems,
+preserving architectural integrity, simplifying testing boundaries, and enabling future extraction.  
+
+The defined communication strategy aligns with ADR-001 (Modular Monolith) and ADR-003 (deferred distribution).
 
 ## Rationale
 
@@ -58,24 +72,25 @@ This decision directly supports the **primary NFRs**:
 
 Additional rationale:
 
-- Lower infrastructure complexity (no event brokers, no message queues yet)  
-- Easier to test & debug in early stages  
-- Faster AWS deployment path (API Gateway → Service → DB)  
-- Clear AaC demonstration (tracing decisions → models → validation → code)
+- Reduces cognitive load for development & deployment 
+- Faster AWS deployment path (`API Gateway → Service → DB`)  
+- Enables traceability across ADR → C4 → IaC → code (AaC narrative)
 
-##  Alternatives Considered & Rejected
+##  Alternatives Considered
 
 | Option | Status | Reason |
 |--------|--------|--------|
-| Microservices for each module | ❌ Rejected | Unnecessary distribution & deployment overhead at current scale |
-| Event-driven integration (SNS/SQS/Kafka) | ⏳ Postponed | Could be introduced later based on NFR scaling needs |
-| Direct module → external system calls | ❌ Rejected | Couples domain services to external systems & breaks separation |
+| Microservices per module | **Deferred** | Would introduce premature distribution (see ADR-003) |
+| Event-driven integration (SNS/SQS/Kafka) | **Deferred** | NFRs do not justify async yet |
+| Direct calls from services to external systems | Rejected | Coupling risks; breaks separation |
+| Hybrid (partial decomposition) | Rejected | Adds complexity without NFR justification |
 
+> The alternatives above may become viable if **secondary NFRs (Scalability, High Availability, Observability)** become primary drivers.
 
-## 📈 Consequences
+## Consequences
 
 ### Positive
-- Faster development and onboarding
+- Faster development and deployment
 - Easier to demonstrate Architecture-as-Code workflows
 - Clear evolution path for scaling and distribution
 - Compatible with IaC-first deployment on AWS
@@ -93,23 +108,29 @@ This decision satisfies the reliability requirement for **baseline resilience**,
 
 **High Availability and Scalability are recognized as future NFRs**, not baseline drivers.
 
-## Future Evolution Path
+## Future Evolution Path (Guided by ADR-003)
 
-This decision keeps doors open for:
-- Extracting Integration Service as a microservice
-- Introducing async messaging (SNS/SQS/EventBridge)
-- Applying circuit breakers / bulkheads (e.g., Resilience4j)
-- Scaling read vs write paths independently (CQRS option)
+This decision allows for:
 
-These directions align with the **secondary NFRs** identified in `requirements-refined.md`:
-- Scalability
-- High Availability
-- Observability
+- Extracting **Integration Service** as first microservice candidate
+- Introducing SNS/SQS/EventBridge for async communication
+- Scaling containers independently once justified
+- Distributed architecture evolution based on updated NFRs
+
+Reevaluation triggers include:
+
+- throughput/latency pressure
+- team scaling or domain ownership changes
+- SLA/performance divergence per module
+- event-driven workflows as primary business driver
 
 ## References
 
 - ADR-001 — Modular Monolith Architecture
-- `/requirements/requirements-refined.md`
-- `/c4/workspace.dsl` (container relationships)
+- ADR-003 — Deferred Microservices & Distribution Strategy
+- `requirements-refined.md`
+- `c4/workspace.dsl` (Container View)
 
-**Decision Accepted — synchronous integration baseline established.**
+---
+
+**Decision Accepted — synchronous integration baseline established, with distribution intentionally *deferred*, not *dismissed*.**

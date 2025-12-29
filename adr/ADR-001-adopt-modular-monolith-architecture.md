@@ -2,29 +2,34 @@
 
 **Status:** Accepted  
 **Date:** 2025-12-28  
-**Decision Type:** Architectural Baseline
+**Decision Type:** Architectural Baseline  
+## Changelog
+- **2025-12-29** — Terminology refined; aligned with ADR-003; decision unchanged
+
 
 ---
 
-## 🎯 Context
+## Context
 
-The Order Processing System (OPS) is the core system responsible for managing
-the lifecycle of customer orders. The architecture must support:
+The Order Processing System (OPS) manages the lifecycle of customer orders and must:
 
-- a clear separation of responsibilities
-- maintainability and testability
-- integration with external systems (Payment, Inventory, Notifications, Accounting)
-- incremental delivery and future scaling options
-- an Architecture-as-Code approach for traceability and automation
+- separate responsibilities clearly
+- ensure maintainability and testability
+- integrate with multiple external systems (Payment, Inventory, Notifications, Accounting)
+- support incremental delivery and future scaling options
+- enable an Architecture-as-Code (AaC) workflow for traceability and automation
 
-Initial requirements indicate a moderate domain complexity with real-time integration needs,
-but no justification for independent deployment or team autonomy per module (yet).
+Based on the **primary NFRs identified in `requirements-refined.md`**:
 
----
+- **Maintainability**
+- **Time-to-Market**
+- **Reliability**
 
-## 🧩 Decision
+there is *no present justification* for distributed deployment or independently scalable services.
 
-We will structure OPS as **four containers** within a
+## Decision
+
+OPS will be structured as **four containers** within a  
 **Modular Monolith architecture**:
 
 | Container | Responsibility | Tech Stack |
@@ -32,85 +37,85 @@ We will structure OPS as **four containers** within a
 | **Order API** | Entry point, request handling, routing | REST API (Spring Boot) |
 | **Order Service** | Domain workflows & business logic | Java / Spring Boot |
 | **Order Database** | Persistent data storage | PostgreSQL |
-| **Integration Service** | Communication with external systems | Java / Spring Boot |
+| **Integration Service** | Gateway to all external systems | Java / Spring Boot |
 
-This structure is defined and versioned in `c4/workspace.dsl`.
+This structure is defined and versioned as code in `c4/workspace.dsl`.
 
 **Architecture Style Chosen:**
-> **Modular Monolith with clear container boundaries**
+> **Modular Monolith with intentional container boundaries**
 
----
 
-## 💡 Rationale
+## Rationale
 
-This structure is chosen because it:
+This structure:
 
-✔ Encourages separation of concerns  
-✔ Keeps internal communication simple and fast (in-process)  
-✔ Supports incremental modularization if needed later  
-✔ Allows local development without heavy infrastructure  
-✔ Simplifies the initial learning curve for the demo and the AaC narrative  
-✔ Aligns with deployment goals for the demo (single deployment unit)  
+- aligns directly with the **primary NFRs**
+- reduces cognitive & infrastructure load for early delivery
+- simplifies local development & CI/CD for the demo
+- supports iterative refinement (key for AaC)
+- keeps communication in-process for speed & simplicity
+- allows future decomposition if justified
 
-Alternative patterns (e.g. microservices or event-driven SOA) were considered but rejected for now.
+It is the **simplest architecture that can work** for the current context,  
+while preserving future evolution paths.
 
----
+## Alternatives Considered
 
-## 🚫 Alternatives Considered (and Rejected)
+| Option | Status | Reason |
+|--------|--------|--------|
+| Microservices | **Deferred** | Premature distribution; no primary NFR justification *(See ADR-003)* |
+| Event-driven modules | **Deferred** | Future option if async becomes a requirement |
+| Single-layer monolith | Rejected | Sacrifices maintainability & modularity |
+| Multiple deployable components | Deferred | Delivery velocity and overhead conflict with demo goals |
 
-| Option | Status | Reason for Rejection |
-|--------|--------|----------------------|
-| **Microservices** | Rejected | Introduces distributed complexity without business or team benefits |
-| **Single-layer monolith** | Rejected | Harder to maintain, no modular separation for growth |
-| **Event-driven modules** | Deferred | Adds architectural complexity; may be introduced later for scalability or async integration |
-
----
-
-## 📈 Consequences
+## Consequences
 
 ### Positive
-- Fast feedback cycles in development
-- Lower infrastructure cost and overhead
-- Clear architectural structure for newcomers
-- Strong candidate for Architecture-as-Code automation
+- Supports fast feedback cycles
+- Simplified IAM & networking boundaries on AWS
+- Lower operational complexity
 
 ### Negative / Trade-offs
-- Containers are not independently deployable (by design, for now)
-- Future scaling may require container extraction
-- Requires discipline to preserve boundaries in code
+- Modules are not independently deployable (by design)
+- Scaling requires selective extraction in the future
+- Requires discipline to maintain container boundaries in code
 
-### Future Opportunities
-- Containers may evolve into microservices if needed
-- Asynchronous integration (e.g., SNS/SQS) can be introduced in later iterations
+## Evolution Strategy
+
+This ADR assumes **future evolution is possible**:
+
+- Extract containers → microservices if NFR priorities change *(See ADR-003)*
+- Introduce async messaging (SNS/SQS/EventBridge) when required
+
+The architecture is intentionally **evolvable, not fixed**.
 
 ---
 
-## 📌 Decision Scope
+## Decision Scope
 
 This ADR applies to:
 
-- Code structure
-- Integration approach (synchronous, request-driven)
-- Deployment packaging (single application for now)
-- C4 Container View
+- high-level structure
+- module boundaries
+- deployment shape (single unit)
+- synchronous communication baseline (extended in ADR-002)
 
-This ADR does *not* define:
+It does *not* define:
 
-- Data model details
-- API contracts
-- External system responsibilities
-- Deployment infrastructure
+- internal module code structure
+- data schema
+- API contract formats
+- deployment infrastructure
 
 Those will be addressed in later ADRs.
 
+## References
+
+- `requirements-refined.md` — primary NFRs
+- `ADR-002` — synchronous integration model
+- `ADR-003` — deferred microservices & distribution
+- `c4/workspace.dsl` — container model definition
+
 ---
 
-## 🧾 References
-
-- `c4/workspace.dsl`
-- `/requirements/*.md`
-
----
-
-**Decision Accepted — Modular Monolith established as the baseline architecture style.**
-
+**Decision Accepted — Modular Monolith established as the baseline architecture style, with distribution intentionally *deferred*, not *dismissed*.**
