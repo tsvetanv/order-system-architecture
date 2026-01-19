@@ -24,6 +24,7 @@ workspace "Order Processing System" "C4 model for the Order Processing System de
             orderApi -> orderService "Invokes domain operations"
             orderService -> orderDb "Reads/Writes order state" "JDBC"
             orderService -> integrationService "Triggers external operations"
+
         }
 
         # External Systems
@@ -56,6 +57,8 @@ workspace "Order Processing System" "C4 model for the Order Processing System de
         integrationService -> notificationSystem "Sends order notifications" "HTTPS"
         integrationService -> accountingSystem "Submits reporting data" "HTTPS"
     }
+
+
 
     views {
 
@@ -108,4 +111,7 @@ workspace "Order Processing System" "C4 model for the Order Processing System de
             }
         }
     }
+    # Link your markdown folder
+    !docs docs
+    !adrs docs/adr
 }

@@ -13,6 +13,9 @@ workspace.json
 *.diagram.png
 *.diagram.svg
 
+# Structurizr Site Generatr - the output folder
+build/
+
 # Exported diagrams (optional - keep if you generate diagrams in Git)
 diagrams/*.png
 diagrams/*.svg
