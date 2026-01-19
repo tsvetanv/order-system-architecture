@@ -113,5 +113,6 @@ workspace "Order Processing System" "C4 model for the Order Processing System de
     }
     # Link your markdown folder
     !docs docs
-    !adrs docs/adr
+    # Hide the default ADR rendering & introduce the arc42 structure that we follow
+    # !adrs docs/adr
 }
