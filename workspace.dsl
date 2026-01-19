@@ -116,6 +116,41 @@ workspace "Order Processing System" "C4 model for the Order Processing System de
             autolayout lr
         }
 
+        # ============================
+        # DYNAMIC VIEW – PLACE ORDER
+        # ============================
+
+        dynamic ops "PlaceOrder" "Runtime Workflow Diagram – Place Order (Happy Path)" {
+            # Added sequence numbers to match the diagram exactly
+            customer -> orderService "Calls createOrder(dto)"
+
+            orderService -> integrationService "inventoryService.checkAvailability(request)"
+            integrationService -> inventorySystem "GET /availability [HTTPS]"
+            inventorySystem -> integrationService "HTTP 200: Available [HTTPS]"
+            integrationService -> orderService "Availability confirmed"
+
+            # The first DB save, starting from OrderService
+            orderService -> orderDb "orderRepository.save(order) [Status: CREATED]"
+
+            orderService -> integrationService "paymentService.authorizePayment(request)"
+            integrationService -> paymentSystem "POST /authorize [HTTPS]"
+            paymentSystem -> integrationService "HTTP 200: AUTHORIZED [HTTPS]"
+            integrationService -> orderService "PaymentResult: AUTHORIZED"
+
+            # The second DB save, starting from OrderService
+            orderService -> orderDb "orderRepository.save(order) [Status: CONFIRMED]"
+
+            orderService -> integrationService "notificationService.send(notification)"
+            integrationService -> notificationSystem "Sends Email/SMS"
+
+            orderService -> integrationService "accountingService.report(record)"
+            integrationService -> accountingSystem "POST /report"
+
+            orderService -> customer "Returns UUID orderId"
+
+            autolayout lr
+        }
+
         styles {
             element "Person" {
               shape person
