@@ -1,61 +1,108 @@
-# Architecture Requirements – Order Processing System
+# Order Processing System — Architecture Documentation
 
-This folder contains the **architectural input artifacts** for the Order Processing System.
+## Motivation
 
-These documents capture the foundational information required to design, evolve, and validate the system architecture before introducing diagrams, infrastructure, or implementation details.
+This project is a **hands-on Architecture as Code (AaC) demo**.
 
-## Purpose
+Its purpose is not to build a feature-complete product, but to **demonstrate how software architecture can be treated as a first-class, versioned, executable artifact** — alongside application code and infrastructure.
 
-The goal of this folder is to:
+The Order Processing System (OPS) is used as a realistic, well-known domain to showcase:
+- architectural decision-making
+- intentional system design
+- traceability between decisions, diagrams, and code
+- evolution-friendly architecture
 
-- establish a shared domain and vocabulary
-- define clear system responsibilities and boundaries
-- capture stakeholder expectations without committing to solutions prematurely
-- enable **traceability** between requirements ↔ ADRs ↔ C4 models ↔ implementation
-- support iterative evolution (Architecture as Code)
+---
 
-## Structure
+## Solution Overview
 
-- **domain.md**  
-  Defines the domain language: actors, core concepts, and relationships used consistently across architecture, code, and documentation.
+The **Order Processing System (OPS)** manages the lifecycle of customer orders.
 
-- **scope.md**  
-  Defines what the Order Processing System is responsible for and what is explicitly out of scope.
+At a high level, the system:
+- accepts customer orders
+- validates inventory availability
+- authorizes payments
+- persists order state
+- notifies external systems
+- reports financial data for accounting
 
-- **requirements-raw.md**  
-  Captures the raw, uncategorized output of initial stakeholder interviews.
+The solution is designed to be:
+- **modular** – clear boundaries and responsibilities
+- **evolvable** – prepared for future extraction and scaling
+- **cloud-ready** – infrastructure-aware, but not infrastructure-bound
+- **explicit** – decisions and trade-offs are documented, not implicit
 
-- **requirements-refined.md** 
-  Defines categorized & prioritized FR/NFRs + architectural drivers.  
+OPS intentionally starts as a **Modular Monolith** with a clear evolution path.
 
-## Lifecycle Stage
+---
 
-This folder represents:
+## Frameworks & Principles
 
-> **Iteration 1 — Architectural Inputs (Baseline)**
+### C4 Model — Architectural Modeling
 
-These inputs inform:
+The **C4 model** is used to describe the structure of the system at different levels of abstraction:
+- who uses the system
+- what the main building blocks are
+- how responsibilities are distributed
 
-- C4 models (System Context & Container Views)
-- ADR-001 (Architecture Style)
-- ADR-002 (Integration Model)
+Diagrams are defined **as code**, ensuring:
+- consistency
+- repeatability
+- alignment with the actual system
 
-Later iterations may refine or update this folder as new requirements emerge.
+---
 
-## Traceability Links
+### arc42 — Architecture Documentation Structure
 
-- Architecture models:  
-  https://github.com/tsvetanv/order-system-architecture
-- Documentation site:  
-  https://github.com/tsvetanv/order-system-docs
+The **arc42 template** is used to structure the architecture documentation.
 
-All changes to architecture **must reference the originating requirement** and be reflected in at least one of:
-- ADRs
-- C4 model update
-- validation rules
+It provides a **clear, familiar, and review-friendly structure** that answers the most important architectural questions:
+- goals and constraints
+- solution strategy
+- building blocks
+- runtime behavior
+- deployment and infrastructure
+- crosscutting concerns
+- risks and quality attributes
 
-## Status
+---
 
-- Requirements are **now categorized**
-- Top 3 NFRs have been selected as architectural drivers
-- Scalability & High Availability acknowledged as **future** NFRs
+### Mapping: C4 Model ↔ arc42
+
+| C4 Model Level | Documented In arc42 Section |
+|---------------|-----------------------------|
+| System Context | 03 — System Scope and Context |
+| Container | 05 — Building Block View |
+| Runtime / Dynamic | 06 — Runtime View |
+| Deployment | 07 — Deployment View |
+
+This mapping ensures that **diagrams and documentation reinforce each other**, rather than drift apart.
+
+---
+
+## Architecture as Code Philosophy
+
+> Architecture is not a diagram.  
+> Architecture is a **living system of decisions, models, and constraints**.
+
+In this project:
+- architecture is **version-controlled**
+- diagrams are **generated**
+- decisions are **explicit and traceable**
+- documentation evolves **together with the system**
+
+This repository represents the **architectural source of truth** for the Order Processing System.
+
+---
+
+## How to Read This Documentation
+
+You can read this documentation:
+- **linearly**, following the arc42 structure
+- or **selectively**, jumping directly to diagrams or decisions
+
+Each section is intentionally lightweight and focused on **architectural intent**, not implementation detail.
+
+---
+
+*This documentation is part of an Architecture as Code demonstration and is designed for learning, discussion, and presentation purposes.*
