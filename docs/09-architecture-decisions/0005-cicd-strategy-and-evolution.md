@@ -2,65 +2,72 @@
 
 **Status:** Accepted  
 **Date:** 2026-01-13  
-**Decision Type:** Delivery & Automation Strategy  
+**Decision Type:** Delivery & Automation Strategy
 
 ## Changelog
-- **2026-01-13** — Initial decision recorded; establishes staged CI/CD evolution model
+- **2026-01-13** — Initial decision recorded; staged CI/CD evolution model introduced
+- **2026-01-26** — Updated to align with ADR-006 and ADR-007; clarified CI/CD scope, documentation pipelines, and responsibility boundaries
 
 ---
 
 ## Context
 
-The Order Processing System (OPS) is developed and maintained across **four dedicated repositories**, each with a clearly defined responsibility:
+The Order Processing System (OPS) is developed as a demonstration of **Architecture as Code (AaC)**,
+with explicit architectural governance and intentional system evolution.
 
-- `order-system-architecture` — Architecture as Code (authoritative source of truth)
-- `order-system-docs` — Documentation site and knowledge base
-- `order-system-infrastructure` — Infrastructure as Code (Terraform)
+Following **ADR-006: Centralize Architecture and Documentation**, all architecture and architecture-related
+documentation for OPS is consolidated into a single authoritative repository:
+
+- `order-system-architecture`
+
+The OPS codebase is maintained across **multiple repositories**, each with a clearly defined responsibility:
+
+- `order-system-architecture` — Architecture as Code, ADRs, diagrams, and documentation (authoritative source of truth)
 - `order-system-services` — Executable backend (modular monolith)
+- `order-system-infrastructure` — Infrastructure as Code (Terraform)
 
-The system needs **consistency, automated builds, validation, and deployment workflows**.
+OPS requires **automated validation, builds, and deployment workflows**, while preserving:
 
-The CI/CD strategy must:
-
-- support the **Architecture-as-Code (AaC)** approach
-- preserve **clear ownership boundaries** between repositories
-- enable **fast feedback loops** during development
-- avoid premature coupling or over-orchestration
-- remain **evolvable** toward enterprise-grade automation
+- clear ownership boundaries between concerns,
+- architectural intent over tooling convenience,
+- fast feedback loops,
+- low operational and cognitive overhead,
+- an explicit and realistic evolution path toward more advanced CI/CD.
 
 ---
 
 ## Decision
 
-At the current stage of development, OPS will adopt the following CI/CD strategy:
+OPS adopts the following CI/CD strategy:
 
-> **One pipeline per repository — coordinated by conventions, not by a master pipeline.**
+> **One pipeline per repository — coordinated by architectural conventions, not by centralized orchestration.**
 
-Each repository owns and maintains its own CI/CD pipeline, aligned with its specific responsibility.
-Cross-repository coordination is achieved through shared standards and architectural agreements,
-not through centralized orchestration.
+Each repository **owns and maintains its own CI/CD pipeline**, aligned strictly with its responsibility.
+Cross-repository coordination is achieved through **architectural agreements and ADRs**, not through a
+global or “golden” pipeline.
 
-A **centralized, system-level orchestrator** is explicitly **deferred** to a later iteration.
+A **system-level CI/CD orchestrator** is explicitly **deferred** to a later iteration.
 
 ---
 
-## Rationale
+## CI/CD Scope Clarification
 
-This decision aligns with the current system maturity and architectural goals:
+To avoid ambiguity, CI/CD responsibilities are explicitly scoped.
 
-- Repositories are **logically related but not operationally inseparable**
-- Changes in one repository do not always require redeployment of the entire system
-- Debugging, iteration speed, and contributor autonomy are critical at this stage
-- CI/CD complexity should grow **with the system**, not ahead of it
+### CI/CD **includes**
+- Application build, test, packaging, and deployment
+- Documentation build, validation, and publishing
+- Architecture validation and consistency checks
 
-The chosen approach enables:
+### CI/CD **excludes**
+- Infrastructure provisioning and destruction
+- Terraform apply operations
+- Environment lifecycle management
+- Runtime orchestration beyond application deployment
 
-- independent validation and feedback per concern (architecture, code, infra, docs)
-- simpler pipelines with smaller failure blast radius
-- clearer ownership and accountability
-- easier local reproduction of CI failures
+Infrastructure remains **manually managed and intentionally controlled** at this stage.
 
-This is the **minimum viable automation** that satisfies current needs without constraining future evolution.
+This boundary is **explicit and accepted**.
 
 ---
 
@@ -68,61 +75,94 @@ This is the **minimum viable automation** that satisfies current needs without c
 
 | Repository | CI/CD Responsibility |
 |-----------|---------------------|
-| `order-system-architecture` | Validate ADRs, diagrams, architecture consistency |
-| `order-system-docs` | Build and publish documentation |
-| `order-system-infrastructure` | Terraform init / validate / plan (apply later) |
-| `order-system-services` | Build, test, package, Docker image creation |
+| `order-system-architecture` | Validate ADRs, render diagrams, build and publish architecture documentation |
+| `order-system-services` | Build, test, package, containerize, and deploy the Order Service |
+| `order-system-infrastructure` | Terraform init / validate / plan (apply deferred and manual) |
 
-All pipelines follow shared conventions for:
+Each pipeline operates **independently** and can evolve at its own pace.
 
-- branching model
-- naming
-- secrets management
-- environment separation
-- artifact versioning
+---
+
+## Alignment with Architectural Decisions
+
+### Alignment with ADR-006 (Centralized Architecture & Documentation)
+
+- Architecture and documentation CI/CD is owned by `order-system-architecture`.
+- Documentation pipelines treat architecture as a **first-class artifact**.
+- Application and infrastructure repositories contain **minimal README content** and reference the architecture repository.
+
+CI/CD reinforces the principle that **architecture is authoritative**, not derived from implementation.
+
+---
+
+### Alignment with ADR-007 (Documentation Structure & Diagram Strategy)
+
+- Documentation CI/CD renders content **only from declarative sources**:
+    - Markdown
+    - Structurizr DSL
+    - (Optionally) PlantUML
+- CI/CD pipelines **do not introduce new documentation tools or formats**.
+- Diagram rendering is deterministic, reproducible, and version-controlled.
+- CI/CD does not embed screenshots, manually edited images, or external diagram sources.
+
+Documentation CI/CD is **external to the system runtime** and does not appear in runtime or deployment diagrams.
+
+---
+
+## CI/CD Architecture Perspective
+
+CI/CD pipelines are treated as **external delivery mechanisms**, not runtime components of OPS.
+
+From a C4 perspective:
+
+- CI/CD is an **external system**
+- It does not participate in:
+    - runtime workflows
+    - system interactions
+    - deployment topology
+
+This preserves architectural clarity and diagram purity.
+
+---
+
+## Rationale
+
+This strategy:
+
+- aligns automation with architectural intent,
+- prevents premature centralization,
+- preserves repository autonomy and ownership,
+- reduces failure blast radius,
+- enables fast, focused feedback loops,
+- supports Architecture as Code principles,
+- remains compatible with enterprise-grade CI/CD evolution.
+
+CI/CD complexity grows **with the system**, not ahead of it.
 
 ---
 
 ## Alternatives Considered
 
-### 1. Centralized Orchestration (Global Pipeline)
-
-**Description**  
-A single “golden pipeline” orchestrates all repositories as one logical system,
-executing architecture validation, infrastructure provisioning, application build,
-deployment, and documentation publishing in a strict sequence.
+### 1. Centralized System-Level Pipeline
 
 **Status:** Deferred
 
-**Pros**
-- Strong system-level guarantees
-- Explicit ordering and dependencies
-- Enterprise-aligned deployment model
-- Suitable for large teams and regulated environments
+A single pipeline orchestrating architecture validation, infrastructure provisioning,
+application build, deployment, and documentation publishing.
 
-**Cons**
-- High initial complexity
-- Tight coupling between repositories
-- Slower feedback loops
-- Larger failure blast radius
-- Harder debugging and local reproduction
-
-**Assessment**  
-Architecturally valid but **premature** for the current scope and scale of OPS.
+**Assessment:**  
+Architecturally valid but premature for the current scope and maturity of OPS.
 
 ---
 
-### 2. Separate CI/CD Repository
-
-**Description**  
-A dedicated repository contains all pipeline definitions and orchestrates other repos.
+### 2. Dedicated CI/CD Repository
 
 **Status:** Rejected
 
-**Reason**
+**Reason:**
 - Introduces hidden coupling
-- Pipelines drift from the code they operate on
-- Violates ownership clarity
+- Separates pipelines from the code they operate on
+- Weakens ownership and accountability
 - Adds operational overhead without immediate benefit
 
 ---
@@ -130,55 +170,50 @@ A dedicated repository contains all pipeline definitions and orchestrates other 
 ## Consequences
 
 ### Positive
-- Fast and isolated feedback cycles
-- Clear ownership per repository
-- Lower operational and cognitive load
-- CI/CD evolves incrementally with the system
+- Clear CI/CD ownership per concern
+- Strong alignment with architectural governance
+- Independent and fast feedback cycles
+- Lower operational complexity
+- Clean evolution path toward advanced CI/CD
 
 ### Trade-offs
 - No system-wide deployment guarantees yet
-- Cross-repository compatibility relies on discipline and conventions
-- Full end-to-end automation deferred
+- Cross-repository compatibility relies on architectural discipline
+- Full end-to-end automation is intentionally deferred
 
-These trade-offs are **explicit and accepted** at this stage.
+These trade-offs are **explicit, documented, and accepted**.
 
 ---
 
 ## Evolution Strategy
 
-The CI/CD strategy for the Order Processing System defined by this ADR is intentionally **staged and incremental**,
-aligned with the overall architectural maturity of the system.  
-This staged approach ensures that architecture is **defined first**, then **automated and deployed**,
-and finally **explained and demonstrated**, avoiding premature complexity while preserving a clear
-evolution path toward enterprise-grade CI/CD orchestration.
+The CI/CD strategy for OPS evolves incrementally:
+
+1. Architecture and documentation defined and validated
+2. Application build and deployment automated
+3. Infrastructure automation introduced cautiously
+4. System-level orchestration evaluated when justified
+
+This ensures **architecture leads automation**, not the other way around.
 
 ---
 
 ## Decision Scope
 
-This ADR applies to:
+This ADR governs:
 
 - CI/CD ownership model
-- Pipeline structure and responsibility boundaries
-- Automation strategy at the current development stage
+- Pipeline responsibility boundaries
+- CI/CD scope at the current system maturity
 
-It does **not** define:
+It explicitly does **not** define:
 
 - specific CI/CD tools or vendors
-- cloud provider–specific deployment details
-- environment promotion rules
+- cloud-provider-specific deployment mechanics
+- environment promotion strategies
 
-Those concerns will be addressed in future ADRs as the system evolves.
-
----
-
-## References
-
-- `ADR-001` — Modular Monolith Architecture
-- `ADR-003` — Deferred Microservices & Distribution
-- Iteration plans — Executable Architecture, Validation, Integration
-- Repository READMEs for implementation details
+Those concerns are addressed in separate ADRs as OPS evolves.
 
 ---
 
-**Decision Accepted — CI/CD will evolve incrementally, prioritizing clarity, autonomy, and architectural alignment over premature centralization.**
+**Decision Accepted — CI/CD evolves incrementally, reinforcing architectural clarity, ownership, and intentional system growth.**
