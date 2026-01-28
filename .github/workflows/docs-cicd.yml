@@ -27,14 +27,15 @@ jobs:
         uses: actions/checkout@v4
 
       # --------------------------------------------------
-      # 2. Generate documentation site using
-      #    Structurizr Site Generator (Docker)
+      # 2. Generate documentation site
+      #    (Structurizr Site Generator)
       # --------------------------------------------------
       - name: Generate documentation site
         run: |
           mkdir -p build/site
 
           docker run --rm \
+            --user "$(id -u):$(id -g)" \
             -v "${PWD}:/var/model" \
             ghcr.io/avisi-cloud/structurizr-site-generatr:1.5.2 \
             generate-site \
