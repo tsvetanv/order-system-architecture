@@ -53,7 +53,6 @@ ADRs connect with:
 - `/c4/workspace.dsl`
 - Infrastructure (Terraform) in `order-system-infrastructure`
 - Application code in `order-system-services`
-- Documentation site in `order-system-docs` 
 
 ## Related Repositories
 
@@ -65,6 +64,3 @@ ADRs connect with:
 
 - Application code:  
   https://github.com/tsvetanv/order-system-services
-
-- Documentation site:  
-  https://github.com/tsvetanv/order-system-docs

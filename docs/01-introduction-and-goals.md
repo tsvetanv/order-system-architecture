@@ -20,8 +20,6 @@ architecture is structured, versioned, reviewable, and evolvable.
   https://github.com/tsvetanv/order-system-services
 - Infrastructure as Code:  
   https://github.com/tsvetanv/order-system-infrastructure
-- Documentation site:  
-  https://github.com/tsvetanv/order-system-docs
 
 
 

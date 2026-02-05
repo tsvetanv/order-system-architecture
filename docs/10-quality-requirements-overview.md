@@ -46,8 +46,6 @@ Later iterations may refine or update this folder as new requirements emerge.
 
 - Architecture models:  
   https://github.com/tsvetanv/order-system-architecture
-- Documentation site:  
-  https://github.com/tsvetanv/order-system-docs
 
 All changes to architecture **must reference the originating requirement** and be reflected in at least one of:
 - ADRs

@@ -16,5 +16,3 @@ Diagram formats and tooling will be introduced incrementally.
 
 - Infrastructure definitions:  
   https://github.com/tsvetanv/order-system-infrastructure
-- Documentation site:  
-  https://github.com/tsvetanv/order-system-docs
